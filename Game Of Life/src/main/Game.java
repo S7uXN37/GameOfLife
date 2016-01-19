@@ -19,6 +19,7 @@ public class Game extends BasicGame
 	public static int GRID_SIZE_Y = 50;
 	public static int PX_PER_GRID = 10;
 	public static int BORDER_SIZE = 10;
+	public static float ticksPerSec = 5F;
 	public static final Color GRID_COLOR = new Color(1F, 1F, 1F, 0.5F);
 	public static final Color BCKG_COLOR = Color.black;
 	public static final Color BORDER_COLOR = Color.gray;
@@ -33,7 +34,9 @@ public class Game extends BasicGame
 	protected static int HEIGHT;
 	
 	int updatesPerSecond = 0;
+	float tickTimer = 0F;
 	boolean[] map;
+	boolean isSimulating = false;
 	
 	public Game(String gamename)
 	{
@@ -63,6 +66,16 @@ public class Game extends BasicGame
 	@Override
 	public void update(GameContainer container, int delta) throws SlickException {
 		updatesPerSecond = (updatesPerSecond + 1000/delta)/2;
+		
+		if (isSimulating) {
+			if (tickTimer <= 0F) {
+				tickTimer = 1/ticksPerSec;
+				
+				System.out.println("tick");
+			} else {
+				tickTimer -= delta/1000F;
+			}
+		}
 		
 		if(closeRequested) {
 			Log.info("Close has been requested, exiting...");
@@ -136,5 +149,9 @@ public class Game extends BasicGame
 	
 	public void close() {
 		closeRequested = true;
+	}
+	
+	public void toggleSimulation() {
+		isSimulating = !isSimulating;
 	}
 }
