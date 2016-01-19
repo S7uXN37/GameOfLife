@@ -1,6 +1,8 @@
 package main;
 
 import java.awt.Font;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,7 +24,8 @@ public class Game extends BasicGame
 	public static float ticksPerSec = 5F;
 	public static final Color GRID_COLOR = new Color(1F, 1F, 1F, 0.5F);
 	public static final Color BCKG_COLOR = Color.black;
-	public static final Color BORDER_COLOR = Color.gray;
+	public static final Color OFF_COLOR = Color.gray;
+	public static final Color ON_COLOR = Color.cyan;
 	public static final Color ALIVE_COLOR = Color.blue;
 	public static final Color DEAD_COLOR = Color.yellow;
 	
@@ -55,6 +58,9 @@ public class Game extends BasicGame
 	public void reset() {
 		map = new boolean[GRID_SIZE_X * GRID_SIZE_Y];
 		
+		if (isSimulating)
+			toggleSimulation();
+		
 		closeRequested = false;
 		
 		gameContainer.getInput().removeAllKeyListeners();
@@ -71,7 +77,7 @@ public class Game extends BasicGame
 			if (tickTimer <= 0F) {
 				tickTimer = 1/ticksPerSec;
 				
-				System.out.println("tick");
+				tick();
 			} else {
 				tickTimer -= delta/1000F;
 			}
@@ -86,7 +92,7 @@ public class Game extends BasicGame
 	public void render(GameContainer gc, Graphics g) throws SlickException
 	{
 		// draw borders
-		g.setColor(BORDER_COLOR);
+		g.setColor(isSimulating ? ON_COLOR : OFF_COLOR);
 		g.fillRect(0, 0, WIDTH, HEIGHT);
 		
 		g.setColor(BCKG_COLOR);
@@ -128,6 +134,45 @@ public class Game extends BasicGame
 		g.setColor(Color.black);
 		g.setFont(smallFont);
 		g.drawString(""+updatesPerSecond, 2, -2);;
+	}
+	
+	private void tick() {
+		HashMap<Integer, Boolean> changes = new HashMap<Integer, Boolean>();
+		
+		for (int x = 0; x < GRID_SIZE_X; x++) {
+			for (int y = 0; y < GRID_SIZE_Y; y++) {
+				int newVal = -1;
+				boolean isLive = map[Util.coordsToField(x, y)];
+				int adjLive = 0;
+				
+				for (int _x = x-1; _x <= x+1; _x++) {
+					for (int _y = y-1; _y <= y+1; _y++) {
+						if (_x < 0 || _x >= GRID_SIZE_X || _y < 0 || _y >= GRID_SIZE_Y)
+							continue;
+						if (_x == x && _y == y)
+							continue;
+						if (map[Util.coordsToField(_x, _y)])
+							adjLive++;
+					}
+				}
+				
+				if (isLive) {
+					if (adjLive < 2 || adjLive > 3)
+						newVal = 0;
+				} else if (adjLive == 3) {
+					newVal = 1;
+				}
+				
+				if (newVal != -1)
+					changes.put(Util.coordsToField(x, y), newVal == 1);
+			}
+		}
+		
+		Iterator<Integer> it = changes.keySet().iterator();
+		while (it.hasNext()) {
+			int key = it.next();
+			map[key] = changes.get(key);
+		}
 	}
 	
 	public static void main(String[] args) {

@@ -38,6 +38,13 @@ public class InputInterface implements KeyListener, MouseListener {
 				break;
 			case Input.KEY_SPACE:
 				game.toggleSimulation();
+				break;
+			case Input.KEY_LEFT:
+				Game.ticksPerSec -= 1F;
+				break;
+			case Input.KEY_RIGHT:
+				Game.ticksPerSec += 1F;
+				break;
 		}
 	}
 	
