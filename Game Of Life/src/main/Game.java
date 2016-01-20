@@ -33,6 +33,7 @@ public class Game extends BasicGame
 	
 	private boolean closeRequested = false;
 	protected org.newdawn.slick.Font smallFont;
+	protected org.newdawn.slick.Font regularFont;
 	protected static int WIDTH;
 	protected static int HEIGHT;
 	
@@ -40,6 +41,7 @@ public class Game extends BasicGame
 	float tickTimer = 0F;
 	boolean[] map;
 	boolean isSimulating = false;
+	boolean showTutorial = true;
 	
 	public Game(String gamename)
 	{
@@ -52,6 +54,7 @@ public class Game extends BasicGame
 		gameContainer = gc;
 		gameContainer.setAlwaysRender(true);
 		smallFont = new TrueTypeFont(new Font("Arial", Font.PLAIN, 10), true);
+		regularFont = new TrueTypeFont(new Font("Arial", Font.BOLD, 20), true);
 		reset();
 	}
 	
@@ -134,6 +137,28 @@ public class Game extends BasicGame
 		g.setColor(Color.black);
 		g.setFont(smallFont);
 		g.drawString(""+updatesPerSecond, 2, -2);;
+		
+		// draw tutorial
+		if (showTutorial) {
+			g.setColor(Color.black);
+			g.fillRect(0, 0, WIDTH, HEIGHT);
+			g.setColor(Color.white);
+			g.setFont(regularFont);
+			float scale = regularFont.getLineHeight();
+			float offsetY = -30F;
+			g.drawString("Tutorial - Game Of Life",										BORDER_SIZE+10, HEIGHT/2F-6*scale+offsetY);
+			g.drawString("The rules are:", 												BORDER_SIZE+10, HEIGHT/2F-4*scale+offsetY);
+			g.drawString("A live cell with less than two live neighbours dies", 		BORDER_SIZE+10, HEIGHT/2F-3*scale+offsetY);
+			g.drawString("A live cell with more than three live neighbours dies", 		BORDER_SIZE+10, HEIGHT/2F-2*scale+offsetY);
+			g.drawString("A live cell with two or three live neighbours lives on", 		BORDER_SIZE+10, HEIGHT/2F-1*scale+offsetY);
+			g.drawString("A dead cell with exactly three live neighbours lives",		BORDER_SIZE+10, HEIGHT/2F+offsetY);
+			g.drawString("SPACE - toggle simulation", 									BORDER_SIZE+10, HEIGHT/2F+2*scale+offsetY);
+			g.drawString("R - reset board", 											BORDER_SIZE+10, HEIGHT/2F+3*scale+offsetY);
+			g.drawString("ESC - quit", 													BORDER_SIZE+10, HEIGHT/2F+4*scale+offsetY);
+			g.drawString("LEFT - decrease speed", 										BORDER_SIZE+10, HEIGHT/2F+5*scale+offsetY);
+			g.drawString("RIGHT - increase speed", 										BORDER_SIZE+10, HEIGHT/2F+6*scale+offsetY);
+			g.drawString("T - toggle tutorial", 										BORDER_SIZE+10, HEIGHT/2F+7*scale+offsetY);
+		}
 	}
 	
 	private void tick() {
@@ -195,8 +220,16 @@ public class Game extends BasicGame
 	public void close() {
 		closeRequested = true;
 	}
-	
 	public void toggleSimulation() {
 		isSimulating = !isSimulating;
+	}
+	public void toggleTutorial() {
+		showTutorial = !showTutorial;
+		
+		if (showTutorial && isSimulating)
+			toggleSimulation();
+	}
+	public boolean isInputEnabled() {
+		return !showTutorial;
 	}
 }

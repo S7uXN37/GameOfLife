@@ -45,6 +45,9 @@ public class InputInterface implements KeyListener, MouseListener {
 			case Input.KEY_RIGHT:
 				Game.ticksPerSec += 1F;
 				break;
+			case Input.KEY_T:
+				game.toggleTutorial();
+				break;
 		}
 	}
 	
@@ -53,12 +56,18 @@ public class InputInterface implements KeyListener, MouseListener {
 
 	@Override
 	public void mouseClicked(int button, int x, int y, int clickCount) {
+		if (!game.isInputEnabled())
+			return;
+		
 		game.map[Util.absCoordsToField(x, y)] = dragMode;
 	}
 	
 	boolean dragMode;
 	@Override
 	public void mouseDragged(int oldx, int oldy, int newx, int newy) {
+		if (!game.isInputEnabled())
+			return;
+		
 		HashSet<Integer> fieldsLookedAt = new HashSet<Integer>();
 		
 		float percent = 0;
