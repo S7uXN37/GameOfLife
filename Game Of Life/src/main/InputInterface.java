@@ -48,17 +48,6 @@ public class InputInterface implements KeyListener, MouseListener {
 			case Input.KEY_T:
 				game.toggleTutorial();
 				break;
-			case Input.KEY_1:
-				game.save();
-				break;
-			case Input.KEY_2:
-				int c2 = 0;
-				int it = 100;
-				for(int i=0; i < it; i++)
-					if (game.load())
-						c2++;
-				System.out.println("\nAfter " + it + " iterations: ("+c2+"/"+it+") correct");
-				break;
 		}
 	}
 	

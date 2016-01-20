@@ -1,18 +1,12 @@
 package main;
 
 import java.awt.Font;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
-import java.io.ObjectStreamException;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -242,61 +236,6 @@ public class Game extends BasicGame
 	}
 	public boolean isInputEnabled() {
 		return !showTutorial;
-	}
-
-	Complex c;
-	public void save() {
-		Random r = new Random();
-		boolean[] test = new boolean[r.nextInt(10)];
-		for (int i=0; i < test.length; i++)
-			test[i] = r.nextBoolean();
-		int x = r.nextInt(50);
-		int y = r.nextInt(50);
-		
-		c = new Complex(test, x, y);
-		
-		String cellsStr = "";
-		for (boolean b : c.cells)
-			cellsStr += b + ", ";
-		System.out.println("generated c: x="+c.x+" y="+c.y+" cells={" + cellsStr + "}");
-		
-		try {
-			FileOutputStream fos = new FileOutputStream(new File("test.dat"));
-			ObjectOutputStream oos = new ObjectOutputStream(fos);
-			oos.writeObject(c);
-			oos.flush();
-			oos.close();
-			fos.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		System.out.println("saved");
-	}
-	public boolean load() {
-		Complex c2 = null;
-		try {
-			FileInputStream fis = new FileInputStream(new File("test.dat"));
-			ObjectInputStream ois = new ObjectInputStream(fis);
-			c2 = (Complex) ois.readObject();
-			ois.close();
-			fis.close();
-		} catch (IOException | ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-		
-		System.out.println("loaded");
-		
-		boolean cells_correct = true;
-		for (int i = 0; i < c.cells.length && i < c2.cells.length; i++)
-			cells_correct &= c.cells[i] == c2.cells[i];
-		if (c.x == c2.x && c.y == c2.y && cells_correct) {
-			System.out.println("correct");
-			return true;
-		} else {
-			System.out.println("incorrect");
-			return false;
-		}
 	}
 }
 
