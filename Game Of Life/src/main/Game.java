@@ -1,6 +1,11 @@
 package main;
 
 import java.awt.Font;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectStreamException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -223,6 +228,7 @@ public class Game extends BasicGame
 	public void toggleSimulation() {
 		isSimulating = !isSimulating;
 	}
+	
 	public void toggleTutorial() {
 		showTutorial = !showTutorial;
 		
@@ -231,5 +237,27 @@ public class Game extends BasicGame
 	}
 	public boolean isInputEnabled() {
 		return !showTutorial;
+	}
+}
+
+class Complex implements Serializable {
+	private static final long serialVersionUID = 1L;
+	public boolean[] cells;
+	public int x,y;
+	
+	public Complex(boolean[] _cells, int width, int height) {
+		cells = _cells;
+		x = width;
+		y = height;
+	}
+	
+	private void writeObject(ObjectOutputStream out) throws IOException {
+		
+	}
+	private void readObject(ObjectInputStream in) throws IOException, ClassNotFoundException {
+		
+	}
+	private void readObjectNoData() throws ObjectStreamException {
+		
 	}
 }
