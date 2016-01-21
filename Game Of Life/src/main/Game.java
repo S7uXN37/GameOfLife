@@ -237,25 +237,6 @@ public class Game extends BasicGame
 	public boolean isInputEnabled() {
 		return !showTutorial;
 	}
-	
-	public void test() {
-//		X X X X O
-//		O O O X X
-//		X X O O X
-//		O O X X X
-		int[][] c = new int[][]{
-			new int[]{1,1,1,1,0},
-			new int[]{0,0,0,1,1},
-			new int[]{1,1,0,0,1},
-			new int[]{0,0,1,1,1}
-			};
-		Complex com = new Complex(c);
-		
-		String s = "{ ";
-		for(boolean b : com.cells)
-			s += b+", ";
-		System.out.println(s);
-	}
 }
 
 class Complex implements Serializable {
