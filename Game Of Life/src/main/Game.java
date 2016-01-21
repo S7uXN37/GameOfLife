@@ -237,6 +237,25 @@ public class Game extends BasicGame
 	public boolean isInputEnabled() {
 		return !showTutorial;
 	}
+	
+	public void test() {
+//		X X X X O
+//		O O O X X
+//		X X O O X
+//		O O X X X
+		int[][] c = new int[][]{
+			new int[]{1,1,1,1,0},
+			new int[]{0,0,0,1,1},
+			new int[]{1,1,0,0,1},
+			new int[]{0,0,1,1,1}
+			};
+		Complex com = new Complex(c);
+		
+		String s = "{ ";
+		for(boolean b : com.cells)
+			s += b+", ";
+		System.out.println(s);
+	}
 }
 
 class Complex implements Serializable {
@@ -248,6 +267,24 @@ class Complex implements Serializable {
 		cells = _cells;
 		x = width;
 		y = height;
+	}
+	
+	public Complex(int[][] cells) {
+		x = cells[0].length;
+		y = cells.length;
+		for (int i=0; i < cells.length; i++)
+			if(cells[i].length != x)
+				throw new IllegalArgumentException("Cells-Array must be rectangular");
+		
+		boolean[] _cells = new boolean[x*y];
+		for (int _x=0; _x < x; _x++) {
+			for (int _y=0; _y < y; _y++) {
+				_cells[_x+_y*x] = cells[_y][_x] == 1;
+			}
+		}
+		
+		this.cells = _cells;
+		System.out.println("x="+x+" y="+y);
 	}
 	
 	private void writeObject(ObjectOutputStream out) throws IOException {
