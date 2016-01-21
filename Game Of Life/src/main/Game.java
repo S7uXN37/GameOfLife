@@ -32,6 +32,24 @@ public class Game extends BasicGame
 	public static final Color ON_COLOR = Color.cyan;
 	public static final Color ALIVE_COLOR = Color.blue;
 	public static final Color DEAD_COLOR = Color.yellow;
+	public static final Complex[] PRESETS = new Complex[]{
+		new Complex(new int[][]{ // 0 - GLIDER
+			new int[]{0,1,0},
+			new int[]{0,0,1},
+			new int[]{1,1,1}
+		}),
+		new Complex(new int[][]{ // 1 - GLIDER GUN
+			new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0},
+			new int[]{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0},
+			new int[]{0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+			new int[]{0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,1,1},
+			new int[]{1,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+			new int[]{1,1,0,0,0,0,0,0,0,0,1,0,0,0,1,0,1,1,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0},
+			new int[]{0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0},
+			new int[]{0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+			new int[]{0,0,0,0,0,0,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+		})
+	};
 	
 	public GameContainer gameContainer;
 	
@@ -162,6 +180,7 @@ public class Game extends BasicGame
 			g.drawString("LEFT - decrease speed", 										BORDER_SIZE+10, HEIGHT/2F+5*scale+offsetY);
 			g.drawString("RIGHT - increase speed", 										BORDER_SIZE+10, HEIGHT/2F+6*scale+offsetY);
 			g.drawString("T - toggle tutorial", 										BORDER_SIZE+10, HEIGHT/2F+7*scale+offsetY);
+			g.drawString("1-9 - load presets", 											BORDER_SIZE+10, HEIGHT/2F+8*scale+offsetY);
 		}
 	}
 	
@@ -221,13 +240,26 @@ public class Game extends BasicGame
 		}
 	}
 	
+	public void load(int[][] cells) {
+		Complex newCom = new Complex(cells);
+		load (newCom);
+	}
+	public void load(Complex com) {
+		reset();
+		for (int x = 0; x < com.x; x++) {
+			for (int y = 0; y < com.y; y++) {
+				boolean val = com.cells[x+y*com.x];
+				map[x+y*GRID_SIZE_X] = val;
+			}
+		}
+	}
+	
 	public void close() {
 		closeRequested = true;
 	}
 	public void toggleSimulation() {
 		isSimulating = !isSimulating;
 	}
-	
 	public void toggleTutorial() {
 		showTutorial = !showTutorial;
 		
