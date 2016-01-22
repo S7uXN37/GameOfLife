@@ -1,6 +1,9 @@
 package main;
 
 import java.awt.Font;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -77,10 +80,10 @@ public class Game extends BasicGame
 		gameContainer.setAlwaysRender(true);
 		smallFont = new TrueTypeFont(new Font("Arial", Font.PLAIN, 10), true);
 		regularFont = new TrueTypeFont(new Font("Arial", Font.BOLD, 20), true);
-		reset();
+		resetMap();
 	}
 	
-	public void reset() {
+	public void resetMap() {
 		map = new boolean[GRID_SIZE_X * GRID_SIZE_Y];
 		
 		if (isSimulating)
@@ -167,7 +170,7 @@ public class Game extends BasicGame
 			g.setColor(Color.white);
 			g.setFont(regularFont);
 			float scale = regularFont.getLineHeight();
-			float offsetY = -30F;
+			float offsetY = -80F;
 			g.drawString("Tutorial - Game Of Life",										BORDER_SIZE+10, HEIGHT/2F-6*scale+offsetY);
 			g.drawString("The rules are:", 												BORDER_SIZE+10, HEIGHT/2F-4*scale+offsetY);
 			g.drawString("A live cell with less than two live neighbours dies", 		BORDER_SIZE+10, HEIGHT/2F-3*scale+offsetY);
@@ -175,16 +178,19 @@ public class Game extends BasicGame
 			g.drawString("A live cell with two or three live neighbours lives on", 		BORDER_SIZE+10, HEIGHT/2F-1*scale+offsetY);
 			g.drawString("A dead cell with exactly three live neighbours lives",		BORDER_SIZE+10, HEIGHT/2F+offsetY);
 			g.drawString("SPACE - toggle simulation", 									BORDER_SIZE+10, HEIGHT/2F+2*scale+offsetY);
-			g.drawString("R - reset board", 											BORDER_SIZE+10, HEIGHT/2F+3*scale+offsetY);
-			g.drawString("ESC - quit", 													BORDER_SIZE+10, HEIGHT/2F+4*scale+offsetY);
-			g.drawString("LEFT - decrease speed", 										BORDER_SIZE+10, HEIGHT/2F+5*scale+offsetY);
-			g.drawString("RIGHT - increase speed", 										BORDER_SIZE+10, HEIGHT/2F+6*scale+offsetY);
-			g.drawString("T - toggle tutorial", 										BORDER_SIZE+10, HEIGHT/2F+7*scale+offsetY);
-			g.drawString("1-9 - load presets", 											BORDER_SIZE+10, HEIGHT/2F+8*scale+offsetY);
+			g.drawString("F - do one tick", 											BORDER_SIZE+10, HEIGHT/2F+3*scale+offsetY);
+			g.drawString("R - reset board", 											BORDER_SIZE+10, HEIGHT/2F+4*scale+offsetY);
+			g.drawString("SHIFT + R - reset saves",										BORDER_SIZE+10, HEIGHT/2F+5*scale+offsetY);
+			g.drawString("ESC - quit", 													BORDER_SIZE+10, HEIGHT/2F+6*scale+offsetY);
+			g.drawString("LEFT - decrease speed", 										BORDER_SIZE+10, HEIGHT/2F+7*scale+offsetY);
+			g.drawString("RIGHT - increase speed", 										BORDER_SIZE+10, HEIGHT/2F+8*scale+offsetY);
+			g.drawString("T - toggle tutorial", 										BORDER_SIZE+10, HEIGHT/2F+9*scale+offsetY);
+			g.drawString("1-9 - load presets", 											BORDER_SIZE+10, HEIGHT/2F+10*scale+offsetY);
+			g.drawString("SHIFT + 1-9 - save presets", 									BORDER_SIZE+10, HEIGHT/2F+11*scale+offsetY);
 		}
 	}
 	
-	private void tick() {
+	public void tick() {
 		HashMap<Integer, Boolean> changes = new HashMap<Integer, Boolean>();
 		
 		for (int x = 0; x < GRID_SIZE_X; x++) {
@@ -240,12 +246,31 @@ public class Game extends BasicGame
 		}
 	}
 	
+	public void load(int n) {
+		Complex out = null;
+		
+		try {
+			File f = new File("save_"+n+".dat");
+			FileInputStream fis = new FileInputStream(f);
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			
+			out = (Complex) ois.readObject();
+			
+			ois.close();
+			fis.close();
+		} catch (IOException | ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		if (out != null)
+			load (out);
+	}
 	public void load(int[][] cells) {
 		Complex newCom = new Complex(cells);
 		load (newCom);
 	}
 	public void load(Complex com) {
-		reset();
+		resetMap();
 		for (int x = 0; x < com.x; x++) {
 			for (int y = 0; y < com.y; y++) {
 				boolean val = com.cells[x+y*com.x];
@@ -268,6 +293,59 @@ public class Game extends BasicGame
 	}
 	public boolean isInputEnabled() {
 		return !showTutorial;
+	}
+	
+	public void resetSaves () {
+		for (int i = 0; i < PRESETS.length; i++) {
+			resetMap();
+			load (PRESETS[i]);
+			save (i);
+		}
+	}
+	public void save(int n) {
+		int largestX = 0;
+		int largestY = 0;
+		for (int i=0; i < map.length; i++) {
+			if (!map[i])
+				continue;
+			
+			int x,y=0;
+			x = Util.fieldToCoords(i)[0];
+			y = Util.fieldToCoords(i)[1];
+			
+			largestX = Math.max(largestX, x);
+			largestY = Math.max(largestY, y);
+		}
+		
+		boolean[] cells = new boolean[(largestX+1) * (largestY+1)];
+		for (int i=0; i < cells.length; i++) {
+			int x,y=0;
+			x = i % (largestX+1);
+			y = i / (largestX+1);
+			
+			cells[i] = map[Util.coordsToField(x, y)];
+		}
+		
+		Complex saveGame = new Complex(cells, largestX+1, largestY+1);
+		try {
+			File saveFile = new File("save_"+n+".dat");
+			
+			if (saveFile.exists()) {
+				saveFile.delete();
+				saveFile.createNewFile();
+			}
+			
+			FileOutputStream fos = new FileOutputStream(saveFile);
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+			
+			oos.writeObject(saveGame);
+			oos.flush();
+			
+			oos.close();
+			fos.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 }
 

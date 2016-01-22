@@ -8,6 +8,7 @@ import org.newdawn.slick.MouseListener;
 
 public class InputInterface implements KeyListener, MouseListener {
 	private Game game;
+	private boolean shiftDown = false;
 	
 	public InputInterface(Game g) {
 		game = g;
@@ -34,10 +35,16 @@ public class InputInterface implements KeyListener, MouseListener {
 				game.close();
 				break;
 			case Input.KEY_R:
-				game.reset();
+				if (shiftDown)
+					game.resetSaves();
+				else
+					game.resetMap();
 				break;
 			case Input.KEY_SPACE:
 				game.toggleSimulation();
+				break;
+			case Input.KEY_F:
+				game.tick();
 				break;
 			case Input.KEY_LEFT:
 				Game.ticksPerSec -= 1F;
@@ -48,17 +55,82 @@ public class InputInterface implements KeyListener, MouseListener {
 			case Input.KEY_T:
 				game.toggleTutorial();
 				break;
+			case Input.KEY_LSHIFT:
+			case Input.KEY_RSHIFT:
+				shiftDown = true;
+				break;
 			case Input.KEY_1:
-				game.load(Game.PRESETS[0]);
+				if (shiftDown)
+					game.save(0);
+				else
+					game.load(0);
 				break;
 			case Input.KEY_2:
-				game.load(Game.PRESETS[1]);
+				if (shiftDown)
+					game.save(1);
+				else
+					game.load(1);
+				break;
+			case Input.KEY_3:
+				if (shiftDown)
+					game.save(2);
+				else
+					game.load(2);
+				break;
+			case Input.KEY_4:
+				if (shiftDown)
+					game.save(3);
+				else
+					game.load(3);
+				break;
+			case Input.KEY_5:
+				if (shiftDown)
+					game.save(4);
+				else
+					game.load(4);
+				break;
+			case Input.KEY_6:
+				if (shiftDown)
+					game.save(5);
+				else
+					game.load(5);
+				break;
+			case Input.KEY_7:
+				if (shiftDown)
+					game.save(6);
+				else
+					game.load(6);
+				break;
+			case Input.KEY_8:
+				if (shiftDown)
+					game.save(7);
+				else
+					game.load(7);
+				break;
+			case Input.KEY_9:
+				if (shiftDown)
+					game.save(8);
+				else
+					game.load(8);
+				break;
+			case Input.KEY_0:
+				if (shiftDown)
+					game.save(9);
+				else
+					game.load(9);
 				break;
 		}
 	}
 	
 	@Override
-	public void keyReleased(int key, char c) {}
+	public void keyReleased(int key, char c) {
+		switch (key) {
+			case Input.KEY_LSHIFT:
+			case Input.KEY_RSHIFT:
+				shiftDown = false;
+				break;
+		}
+	}
 
 	@Override
 	public void mouseClicked(int button, int x, int y, int clickCount) {
